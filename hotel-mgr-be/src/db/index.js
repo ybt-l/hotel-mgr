@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-require('./Schemas/User')
+require('./Schemas/User');
+require('./Schemas/InviteCode');
+require('./Schemas/Hotel')
 
 const connect = () => {
   return new Promise((resolve) => {

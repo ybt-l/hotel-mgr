@@ -1,7 +1,7 @@
 import { defineComponent, reactive } from 'vue';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons-vue';
 import { auth } from '@/service';
-import { result } from '../../helpers/utils';
+import { result } from '@/helpers/utils';
 import { message } from 'ant-design-vue';
 
 
