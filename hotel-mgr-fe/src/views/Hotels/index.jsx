@@ -1,5 +1,6 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import { hotel } from '@/service';
+import { useRouter } from 'vue-router';
 import { message, Modal, Input } from 'ant-design-vue';
 import { result, formatTimestamp } from '@/helpers/utils';
 import AddOne from './AddOne/index.vue';
@@ -13,6 +14,8 @@ export default defineComponent({
     Update,
   },
   setup() {
+    const router = useRouter();
+
     const columns = [
       {
         title: '房间名',
@@ -135,7 +138,7 @@ export default defineComponent({
 
           result(res)
             .success((data) => {
-              if (type === type) {
+              if (type === 'IN_COUNT') {
                 //入库操作
                 num = Math.abs(num);
               } else {
@@ -158,14 +161,21 @@ export default defineComponent({
       });
     };
 
+    //显示更新弹框
     const update = ({ record }) => {
       showUpdateModal.value = true;
       curEditHotel.value = record;
     }
 
+    //更新列表的某一行数据
     const updateCurHotel = (newData) => {
       Object.assign(curEditHotel.value, newData);
     };
+
+    //进入房间名详情页
+    const toDetail = ({ record }) => {
+      router.push(`/hotels/${record._id}`);
+    }
 
     return {
       columns,
@@ -184,7 +194,8 @@ export default defineComponent({
       showUpdateModal,
       update,
       curEditHotel,
-      updateCurHotel
+      updateCurHotel,
+      toDetail,
     };
   },
 });

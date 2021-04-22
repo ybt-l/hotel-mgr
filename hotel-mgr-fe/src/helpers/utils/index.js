@@ -33,15 +33,21 @@ export const clone = (obj) => {
 }
 
 
+const tsPadStart = (str) => {
+  str = String(str);
+  return str.padStart(2, '0');
+};
+
 export const formatTimestamp = (ts) => {
   const date = new Date(Number(ts));
 
   const YYY = date.getFullYear();
-  const MM = date.getMonth() + 1;
-  const DD = date.getDate();
-  const hh = date.getHours();
-  const mm = date.getMinutes();
-  const ss = date.getSeconds();
+  const MM = tsPadStart(date.getMonth() + 1);
+  const DD = tsPadStart(date.getDate());
+
+  const hh = tsPadStart(date.getHours());
+  const mm = tsPadStart(date.getMinutes());
+  const ss = tsPadStart(date.getSeconds());
 
 
   return `${YYY}/${MM}/${DD} ${hh}:${mm}:${ss}`;

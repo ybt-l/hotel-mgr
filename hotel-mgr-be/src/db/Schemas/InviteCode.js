@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { getMate } = require('../helpers');
+const { getMeta, preSave } = require('../helpers');
 
 const InviteCode = new mongoose.Schema({
   //邀请码
@@ -7,7 +7,9 @@ const InviteCode = new mongoose.Schema({
   //用来注册哪个账户
   user: String,
 
-  meta: getMate(),
+  meta: getMeta(),
 });
+
+InviteCode.pre('save', preSave);
 
 mongoose.model('InviteCode', InviteCode);

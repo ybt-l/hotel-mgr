@@ -8,7 +8,15 @@ const HOTEL_CONST = {
 }
 
 const Hotel = mongoose.model('Hotel');
+const InventoryLog = mongoose.model('InventoryLog');
 
+const findHotelOne = async (id) => {
+  const one = Hotel.findOne({
+    _id: id,
+  }).exec();
+
+  return one;
+};
 
 const router = new Router({
   prefix: '/hotel',
@@ -63,6 +71,9 @@ router.get('/list', async (ctx) => {
 
   const list = await Hotel
     .find(query)
+    .sort({
+      _id: -1,
+    })
     .skip((page - 1) * size)
     .limit(size)
     .exec();
@@ -110,10 +121,7 @@ router.post('/update/count', async (ctx) => {
   } = ctx.request.body;
 
   num = Number(num);
-  const hotel = await Hotel.findOne({
-    _id: id,
-  }).exec();
-
+  const hotel = await findHotelOne(id);
   if (!hotel) {
     ctx.body = {
       code: 0,
@@ -143,6 +151,13 @@ router.post('/update/count', async (ctx) => {
   }
 
   const res = await hotel.save();
+  const log = new InventoryLog({
+    num: Math.abs(num),
+    type,
+  });
+
+  log.save();
+
   ctx.body = {
     data: res,
     code: 1,
@@ -156,9 +171,8 @@ router.post('/update', async (ctx) => {
     ...others
   } = ctx.request.body;
 
-  const one = await Hotel.findOne({
-    _id: id,
-  }).exec();
+  const one = await findHotelOne(id);
+
   //如果没有找到房间名
   if (!one) {
     ctx.body = {
@@ -183,6 +197,29 @@ router.post('/update', async (ctx) => {
     code: 1,
     msg: '保存成功',
   }
+});
+
+router.get('/detail/:id', async (ctx) => {
+  const {
+    id,
+  } = ctx.params;
+
+  const one = await findHotelOne(id);
+  //如果没有找到房间名
+  if (!one) {
+    ctx.body = {
+      msg: '没有找到房间名',
+      code: 0,
+    }
+    return;
+  }
+
+  ctx.body = {
+    msg: '查询成功',
+    data: one,
+    code: 1,
+  }
+
 });
 
 module.exports = router;

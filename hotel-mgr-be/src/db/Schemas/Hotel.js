@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { getMate } = require('../helpers');
+const { getMeta, preSave } = require('../helpers');
 
 const HotelSchema = new mongoose.Schema({
   //房间名
@@ -15,7 +15,9 @@ const HotelSchema = new mongoose.Schema({
   //库存
   count: Number,
 
-  meta: getMate(),
+  meta: getMeta(),
 });
+
+HotelSchema.pre('save', preSave);
 
 mongoose.model('Hotel', HotelSchema);
