@@ -1,6 +1,7 @@
 import { defineComponent, reactive } from 'vue';
 import { hotel } from '@/service';
 import { message } from 'ant-design-vue';
+import store from '@/store';
 import { result, clone } from '@/helpers/utils';
 
 const defaultFormData = {
@@ -19,6 +20,10 @@ export default defineComponent({
   setup(props, context) {
     const addForm = reactive(clone(defaultFormData));
 
+    if (store.state.hotelClassify.length) {
+      addForm.classify = store.state.hotelClassify[0]._id;
+    }
+
     const submit = async () => {
       const form = clone(addForm);
       form.publishDate = addForm.publishDate.valueOf();
@@ -28,6 +33,8 @@ export default defineComponent({
         .success((d, { data }) => {
           Object.assign(addForm, defaultFormData);
           message.success(data.msg);
+
+          context.emit('getList');
         });
     };
 
@@ -40,6 +47,7 @@ export default defineComponent({
       submit,
       props,
       close,
+      store: store.state,
     };
   },
 });

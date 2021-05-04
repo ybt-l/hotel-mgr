@@ -1,9 +1,9 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons-vue';
-import { auth } from '@/service';
+import { auth, resetPassword } from '@/service';
 import { result } from '@/helpers/utils';
 import { getCharacterInfoById } from '@/helpers/character';
-import { message } from 'ant-design-vue';
+import { message, Modal, Input } from 'ant-design-vue';
 import store from '@/store';
 import { useRouter } from 'vue-router';
 import { setToken } from '@/helpers/token';
@@ -24,6 +24,29 @@ export default defineComponent({
       password: '',
       inviteCode: '',
     });
+
+    const forgetPassword = () => {
+      Modal.confirm({
+        title: `输入账号发起申请，管理员会审核`,
+        content: (
+          <div>
+            <Input class="_forget_password_account" />
+          </div>
+        ),
+        onOk: async () => {
+          const el = document.querySelector('._forget_password_account');
+          let account = el.value;
+
+          const res = await resetPassword.add(account);
+
+          result(res)
+            .success(({ msg }) => {
+              message.success(msg);
+            })
+
+        }
+      });
+    }
 
     //注册逻辑
     const register = async () => {
@@ -69,12 +92,15 @@ export default defineComponent({
 
       const res = await auth.login(loginForm.account, loginForm.password);
       result(res)
-        .success(({ msg, data: { user, token } }) => {
+        .success(async ({ msg, data: { user, token } }) => {
+
+          setToken(token);
+          await store.dispatch('getCharacterInfo');
+
           message.success(msg);
           store.commit('setUserInfo', user);
           store.commit('setUserCharacter', getCharacterInfoById(user.character));
 
-          setToken(token);
 
           router.replace('/hotels');
         });
@@ -88,6 +114,7 @@ export default defineComponent({
       //登录相关的数据
       login,
       loginForm,
+      forgetPassword,
     };
   },
 });

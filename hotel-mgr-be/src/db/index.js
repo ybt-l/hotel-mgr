@@ -4,6 +4,10 @@ require('./Schemas/InviteCode');
 require('./Schemas/Hotel');
 require('./Schemas/InventoryLog');
 require('./Schemas/Character');
+require('./Schemas/Log');
+require('./Schemas/LogResponse');
+require('./Schemas/ForgetPassword');
+require('./Schemas/HotelClassify');
 
 const connect = () => {
   return new Promise((resolve) => {

@@ -1,6 +1,8 @@
 const Router = require('@koa/router');
 const mongoose = require('mongoose');
 const { getBody } = require('../../helpers/utils/index');
+const config = require('../../project.config');
+const { loadExcel, getFirstSheet } = require('../../helpers/excel');
 
 const HOTEL_CONST = {
   IN: 'IN_COUNT',
@@ -9,6 +11,7 @@ const HOTEL_CONST = {
 
 const Hotel = mongoose.model('Hotel');
 const InventoryLog = mongoose.model('InventoryLog');
+const HotelClassify = mongoose.model('HotelClassify');
 
 const findHotelOne = async (id) => {
   const one = Hotel.findOne({
@@ -220,6 +223,60 @@ router.get('/detail/:id', async (ctx) => {
     code: 1,
   }
 
+});
+
+router.post('/addMany', async (ctx) => {
+  const {
+    key = ''
+  } = ctx.request.body;
+
+  const path = `${config.UPLOAD_DIR}/${key}`;
+
+  const excel = loadExcel(path);
+  const sheet = getFirstSheet(excel);
+
+  const arr = [];
+  for (let i = 0; i < sheet.length; i++) {
+    let record = sheet[i];
+
+    const [
+      name,
+      price,
+      admin,
+      publishDate,
+      classify,
+      count,
+    ] = record;
+
+    let classifyId = classify;
+
+    const one = await HotelClassify.findOne({
+      title: classify,
+    });
+
+    if (one) {
+      classifyId = one._id;
+    }
+
+    arr.push({
+      name,
+      price,
+      admin,
+      publishDate,
+      classify: classifyId,
+      count,
+    });
+  }
+
+  await Hotel.insertMany(arr);
+
+  ctx.body = {
+    code: 1,
+    msg: '添加成功',
+    data: {
+      addCount: arr.length,
+    }
+  };
 });
 
 module.exports = router;

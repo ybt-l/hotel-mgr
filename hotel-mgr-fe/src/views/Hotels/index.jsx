@@ -1,8 +1,9 @@
 import { defineComponent, ref, onMounted } from 'vue';
-import { hotel } from '@/service';
+import { hotel, hotelClassify } from '@/service';
 import { useRouter } from 'vue-router';
 import { message, Modal, Input } from 'ant-design-vue';
 import { result, formatTimestamp } from '@/helpers/utils';
+import { getClassifyTitleById } from '@/helpers/hotel-classify';
 import AddOne from './AddOne/index.vue';
 import Update from './Update/index.vue';
 
@@ -13,7 +14,10 @@ export default defineComponent({
     AddOne,
     Update,
   },
-  setup() {
+  props: {
+    simple: Boolean,
+  },
+  setup(props) {
     const router = useRouter();
 
     const columns = [
@@ -44,15 +48,21 @@ export default defineComponent({
       },
       {
         title: '分类',
-        dataIndex: 'classify',
-      },
-      {
-        title: '操作',
         slots: {
-          customRender: 'actions',
-        }
+          customRender: 'classify',
+        },
       },
     ];
+
+    if (!props.simple) {
+      columns.push(
+        {
+          title: '操作',
+          slots: {
+            customRender: 'actions',
+          }
+        });
+    };
 
     const total = ref(0);
     const show = ref(false);
@@ -62,6 +72,7 @@ export default defineComponent({
     const keyword = ref('');
     const isSearch = ref(false);
     const curEditHotel = ref({});
+
 
     //获取房间列表
     const getList = async () => {
@@ -177,6 +188,22 @@ export default defineComponent({
       router.push(`/hotels/${record._id}`);
     }
 
+    const onUploadChange = ({ file }) => {
+      if (file.response) {
+        result(file.response)
+          .success(async (key) => {
+            const res = await hotel.addMany(key);
+
+            result(res)
+              .success(({ data: { addCount } }) => {
+                message.success(`成功添加 ${addCount} 条信息`);
+
+                getList();
+              });
+          });
+      }
+    };
+
     return {
       columns,
       show,
@@ -196,6 +223,10 @@ export default defineComponent({
       curEditHotel,
       updateCurHotel,
       toDetail,
+      getList,
+      getClassifyTitleById,
+      simple: props.simple,
+      onUploadChange,
     };
   },
 });

@@ -3,6 +3,7 @@ import { hotel } from '@/service';
 import { message } from 'ant-design-vue';
 import { result, clone } from '@/helpers/utils';
 import moment from 'moment';
+import store from '@/store';
 
 
 export default defineComponent({
@@ -51,6 +52,7 @@ export default defineComponent({
       submit,
       props,
       close,
+      store: store.state,
     };
   },
 });

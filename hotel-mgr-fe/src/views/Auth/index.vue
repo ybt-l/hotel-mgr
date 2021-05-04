@@ -24,6 +24,7 @@
           <div class="item">
             <a-input
               size="large"
+              type="password"
               v-model:value="loginForm.password"
               placeholder="密码"
             >
@@ -34,7 +35,7 @@
           </div>
 
           <div class="item">
-            <a href="">忘记密码</a>
+            <a href="javascript:;" @click="forgetPassword">忘记密码</a>
           </div>
 
           <div class="item">
@@ -60,6 +61,7 @@
             <a-input
               size="large"
               placeholder="密码"
+              type="password"
               v-model:value="regForm.password"
             >
               <template v-slot:prefix>
@@ -96,7 +98,7 @@
 </template>
 
 
-<script src='./index.js'></script>
+<script src='./index.jsx'></script>
 
 <style lang="scss" scoped>
   @import './index.scss';

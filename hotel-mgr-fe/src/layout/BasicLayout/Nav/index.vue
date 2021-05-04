@@ -9,16 +9,19 @@
       :key="item.url"
       v-only-admin="item.onlyAdmin"
     >
-      <a-sub-menu v-if="item.children">
+      <a-sub-menu v-if="item.children" :key="item.title">
         <template #title>
           <span
             ><MailOutlined /><span>{{ item.title }}</span></span
           >
         </template>
-        <!-- <a-menu-item-group key="g1">
-          <a-menu-item key="1">一</a-menu-item>
-          <a-menu-item key="2">二</a-menu-item>
-        </a-menu-item-group> -->
+        <a-menu-item
+          @click="to(child.url)"
+          v-for="child in item.children"
+          :key="child.url"
+        >
+          {{ child.title }}
+        </a-menu-item>
       </a-sub-menu>
       <a-menu-item @click="to(item.url)" :key="item.url" v-else>
         {{ item.title }}
